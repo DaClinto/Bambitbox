@@ -20,7 +20,7 @@ export const TopBar: React.FC = () => {
         <div className={styles.topBar}>
             <div className={styles.logo}>
                 <div className={styles.logoIcon}>🎵</div>
-                <h1 className={styles.appName}>DAW Studio</h1>
+                <h1 className={styles.appName}>Bambitbox</h1>
             </div>
 
             <div className={styles.controls}>

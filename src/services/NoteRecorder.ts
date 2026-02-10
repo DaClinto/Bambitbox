@@ -69,7 +69,7 @@ export class NoteRecorder {
         this.isRecording = false;
 
         // Finish any hanging notes
-        this.activeNotes.forEach((note, pitch) => {
+        this.activeNotes.forEach((_note, pitch) => {
             this.onNoteOff(pitch, currentTime);
         });
 

@@ -1,4 +1,4 @@
-# 🎵 DAW Studio
+# 🎵 Bambitbox
 
 A lightweight, FL Studio–inspired digital audio workstation built with modern web technologies.
 

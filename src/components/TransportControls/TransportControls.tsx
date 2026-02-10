@@ -7,7 +7,7 @@ export const TransportControls: React.FC = () => {
     const {
         sequencer,
         audioEngine,
-        isPlaying,
+        // isPlaying, // Unused
         setIsPlaying,
         currentStep,
         isInitialized,
@@ -33,7 +33,7 @@ export const TransportControls: React.FC = () => {
         if (transportState === TransportState.PLAYING || transportState === TransportState.RECORDING) {
             sequencer.stop();
             if (transportState === TransportState.RECORDING) {
-                noteRecorder.stopRecording(audioEngine.getContext().currentTime);
+                noteRecorder.stopRecording(audioEngine.getContext()?.currentTime || 0);
             }
             setTransportState(TransportState.STOPPED);
             setIsPlaying(false);
@@ -63,7 +63,7 @@ export const TransportControls: React.FC = () => {
                 setIsPlaying(true);
             }
 
-            noteRecorder.startRecording(audioEngine.getContext().currentTime, recordMode);
+            noteRecorder.startRecording(audioEngine.getContext()?.currentTime || 0, recordMode);
             setTransportState(TransportState.RECORDING);
         }
     }, [transportState, isInitialized, sequencer, setTransportState, setIsPlaying, initializeAudio, noteRecorder, recordMode]);
@@ -74,7 +74,7 @@ export const TransportControls: React.FC = () => {
     const handleStop = useCallback(() => {
         sequencer.stop();
         if (transportState === TransportState.RECORDING) {
-            noteRecorder.stopRecording(audioEngine.getContext().currentTime);
+            noteRecorder.stopRecording(audioEngine.getContext()?.currentTime || 0);
         }
         setTransportState(TransportState.STOPPED);
         setIsPlaying(false);

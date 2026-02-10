@@ -114,6 +114,19 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
                 );
             }
         });
+
+        // Load default samples
+        try {
+            await Promise.all([
+                audioEngineRef.current.loadSample('0', '/samples/kick.wav'),
+                audioEngineRef.current.loadSample('1', '/samples/snare.wav'),
+                audioEngineRef.current.loadSample('2', '/samples/hihat.wav'),
+                audioEngineRef.current.loadSample('3', '/samples/clap.wav'),
+            ]);
+            console.log('Default samples loaded');
+        } catch (error) {
+            console.warn('Failed to load default samples:', error);
+        }
     };
 
     /**

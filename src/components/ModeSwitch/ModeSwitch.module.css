@@ -1,0 +1,53 @@
+/* MODE SWITCH COMPONENT STYLES */
+
+.modeSwitch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-xl);
+    background: var(--color-bg-secondary);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.switchContainer {
+    display: flex;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-lg);
+    padding: 4px;
+    border: 1px solid var(--color-border);
+}
+
+.modeButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.modeButton:hover {
+    color: var(--color-text-primary);
+}
+
+.modeButton.active {
+    background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 217, 255, 0.3);
+}
+
+.icon {
+    font-size: 1.2rem;
+}
+
+.label {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}

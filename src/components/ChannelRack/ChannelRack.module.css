@@ -1,0 +1,159 @@
+/* CHANNEL RACK (STEP SEQUENCER) STYLES */
+
+.channelRack {
+    flex: 1;
+    padding: var(--spacing-xl);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.header {
+    margin-bottom: var(--spacing-lg);
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.subtitle {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}
+
+.grid {
+    display: grid;
+    gap: var(--spacing-md);
+}
+
+.channel {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: var(--spacing-md);
+    align-items: center;
+    padding: var(--spacing-md);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    transition: border-color var(--transition-fast);
+}
+
+.channel:hover {
+    border-color: var(--glass-border);
+}
+
+.channelInfo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.channelName {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.channelColor {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.channelStatus {
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(32, 1fr);
+    gap: 4px;
+}
+
+.step {
+    aspect-ratio: 1;
+    background: var(--color-bg-tertiary);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.step::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-accent-primary);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.step:hover {
+    border-color: var(--color-accent-primary);
+    transform: scale(1.05);
+}
+
+.step:hover::before {
+    opacity: 0.1;
+}
+
+.step:active {
+    transform: scale(0.95);
+}
+
+/* Active step (note is on) */
+.stepActive {
+    background: var(--color-accent-primary);
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 12px rgba(0, 217, 255, 0.5);
+}
+
+.stepActive::before {
+    opacity: 0.3;
+}
+
+/* Currently playing step */
+.stepPlaying {
+    animation: pulse 0.3s ease-in-out;
+    border-color: var(--color-accent-tertiary);
+    box-shadow: 0 0 20px rgba(255, 0, 110, 0.8);
+}
+
+.stepActive.stepPlaying {
+    background: var(--color-accent-tertiary);
+    border-color: var(--color-accent-tertiary);
+    box-shadow: 0 0 20px rgba(255, 0, 110, 1);
+}
+
+/* Beat markers (every 4th step) */
+.stepBeat4 {
+    border-right: 3px solid var(--color-border);
+    margin-right: 3px;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+/* Loading state */
+.loading {
+    text-align: center;
+    padding: var(--spacing-2xl);
+    color: var(--color-text-secondary);
+}

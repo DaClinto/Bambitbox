@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Demo Samples</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #00d9ff, #9d4edd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        button {
+            background: linear-gradient(135deg, #00d9ff, #9d4edd);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 0;
+            display: block;
+            width: 100%;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .info {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #00d9ff;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🎵 DAW Studio - Demo Sample Generator</h1>
+
+    <div class="info">
+        <h3>No audio samples? No problem!</h3>
+        <p>Click the buttons below to generate demo drum samples that you can use in the DAW.</p>
+        <p>Each button will download a .wav file that you can load into the channels.</p>
+    </div>
+
+    <button onclick="generateKick()">📥 Download Kick Sample</button>
+    <button onclick="generateSnare()">📥 Download Snare Sample</button>
+    <button onclick="generateHiHat()">📥 Download Hi-Hat Sample</button>
+    <button onclick="generateClap()">📥 Download Clap Sample</button>
+
+    <div class="info">
+        <h3>How to use:</h3>
+        <ol>
+            <li>Click a button to download a sample</li>
+            <li>Go back to the DAW at <a href="http://localhost:5173" style="color: #00d9ff;">http://localhost:5173</a>
+            </li>
+            <li>Click "+ Load Sample" next to a channel</li>
+            <li>Select the downloaded .wav file</li>
+            <li>Repeat for other channels</li>
+            <li>Click grid cells to create a pattern</li>
+            <li>Press Play and enjoy! 🎉</li>
+        </ol>
+    </div>
+
+    <script>
+        // Helper to download audio buffer as WAV
+        function downloadWav(buffer, filename) {
+            const wav = audioBufferToWav(buffer);
+            const blob = new Blob([wav], { type: 'audio/wav' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Convert AudioBuffer to WAV format
+        function audioBufferToWav(buffer) {
+            const length = buffer.length * buffer.numberOfChannels * 2 + 44;
+            const arrayBuffer = new ArrayBuffer(length);
+            const view = new DataView(arrayBuffer);
+            const channels = [];
+            let offset = 0;
+            let pos = 0;
+
+            // Write WAV header
+            const setUint16 = (data) => { view.setUint16(pos, data, true); pos += 2; };
+            const setUint32 = (data) => { view.setUint32(pos, data, true); pos += 4; };
+
+            setUint32(0x46464952); // "RIFF"
+            setUint32(length - 8); // file length - 8
+            setUint32(0x45564157); // "WAVE"
+            setUint32(0x20746d66); // "fmt " chunk
+            setUint32(16); // length = 16
+            setUint16(1); // PCM (uncompressed)
+            setUint16(buffer.numberOfChannels);
+            setUint32(buffer.sampleRate);
+            setUint32(buffer.sampleRate * 2 * buffer.numberOfChannels); // avg. bytes/sec
+            setUint16(buffer.numberOfChannels * 2); // block-align
+            setUint16(16); // 16-bit
+            setUint32(0x61746164); // "data" - chunk
+            setUint32(length - pos - 4); // chunk length
+
+            // Write interleaved data
+            for (let i = 0; i < buffer.numberOfChannels; i++) {
+                channels.push(buffer.getChannelData(i));
+            }
+
+            while (pos < length) {
+                for (let i = 0; i < buffer.numberOfChannels; i++) {
+                    let sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                    sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+                    view.setInt16(pos, sample, true);
+                    pos += 2;
+                }
+                offset++;
+            }
+
+            return arrayBuffer;
+        }
+
+        // Generate synthetic kick drum
+        async function generateKick() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const duration = 0.5;
+            const sampleRate = context.sampleRate;
+            const buffer = context.createBuffer(1, sampleRate * duration, sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < buffer.length; i++) {
+                const t = i / sampleRate;
+                const freq = 150 * Math.exp(-t * 8); // Frequency sweep
+                const env = Math.exp(-t * 5); // Amplitude envelope
+                data[i] = Math.sin(2 * Math.PI * freq * t) * env;
+            }
+
+            downloadWav(buffer, 'kick.wav');
+        }
+
+        // Generate synthetic snare drum
+        async function generateSnare() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const duration = 0.3;
+            const sampleRate = context.sampleRate;
+            const buffer = context.createBuffer(1, sampleRate * duration, sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < buffer.length; i++) {
+                const t = i / sampleRate;
+                const env = Math.exp(-t * 12);
+                const tone = Math.sin(2 * Math.PI * 200 * t) * 0.3;
+                const noise = (Math.random() * 2 - 1) * 0.7;
+                data[i] = (tone + noise) * env;
+            }
+
+            downloadWav(buffer, 'snare.wav');
+        }
+
+        // Generate synthetic hi-hat
+        async function generateHiHat() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const duration = 0.1;
+            const sampleRate = context.sampleRate;
+            const buffer = context.createBuffer(1, sampleRate * duration, sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < buffer.length; i++) {
+                const t = i / sampleRate;
+                const env = Math.exp(-t * 30);
+                const noise = (Math.random() * 2 - 1);
+                data[i] = noise * env * 0.3;
+            }
+
+            downloadWav(buffer, 'hihat.wav');
+        }
+
+        // Generate synthetic clap
+        async function generateClap() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const duration = 0.2;
+            const sampleRate = context.sampleRate;
+            const buffer = context.createBuffer(1, sampleRate * duration, sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < buffer.length; i++) {
+                const t = i / sampleRate;
+                const env = Math.exp(-t * 15);
+                const noise = (Math.random() * 2 - 1);
+                // Multiple short bursts for clap effect
+                const burst = (Math.sin(t * 200) > 0.5) ? 1 : 0.3;
+                data[i] = noise * env * burst * 0.5;
+            }
+
+            downloadWav(buffer, 'clap.wav');
+        }
+    </script>
+</body>
+
+</html>

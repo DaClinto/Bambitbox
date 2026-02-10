@@ -54,7 +54,7 @@ export const TransportControls: React.FC = () => {
 
         if (transportState === TransportState.RECORDING) {
             // Stop recording but keep playing
-            noteRecorder.stopRecording(audioEngine.getContext().currentTime);
+            noteRecorder.stopRecording(audioEngine.getContext()?.currentTime || 0);
             setTransportState(TransportState.PLAYING);
         } else {
             // Start recording (and playing if not already)
